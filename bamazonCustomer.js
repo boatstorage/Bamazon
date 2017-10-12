@@ -1,5 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var stockQuantityArr = ["placeholder"];
+var priceArr = ["placeholder"];
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -26,18 +28,22 @@ function queryAllitems() {
   console.log("--------Bamazon Items------------");
   for (var i = 0; i < res.length; i++){
 
-  console.log("item id: " + res[i].item_id + " | name: " + res[i].product_name + " | deptartment: " + res[i].deptartment_name + " | price: " + res[i].price);
+  console.log("item id: " + res[i].item_id + " | name: " + res[i].product_name + " | deptartment: " + res[i].deptartment_name + " | price: $" + res[i].price);
 	};
+	stockQuantityArr.push(res[i].stock_quantity);
+	priceArr.push(res[i].price);
+
   connection.end();
+  userPrompt();
 
 });
 };
 
 function userPrompt() {
 	inquirer
-		.prompt(
+		.prompt([
 		{
-			name: "item id",
+			name: "itemID",
 			type: "input",
 			message: "what is the item ID of the item that you would like to buy?"
 
@@ -47,7 +53,40 @@ function userPrompt() {
 			type: "input",
 			message: "how many would you like to buy?"
 		}
-		)
+		])
+		.then(function(answer){
+			var item = answer.itemID;
+			var quantity = answer.units;
+			quantityVerify(item, quantity);
+		}
+
+		function(error) {
+			if error throw error;
+			userPrompt();
+		}
+	})
 }
+
+function quantityVerify(item, quantity){
+	if (stockQuantityArr[item] < quantity ) {
+		console.log("Insufficient quantity")
+		userPrompt();
+	}else {
+		var updatedQuantity = stockQuantityArr[item] - quantity;
+		var price = priceArr[item];
+		updateDB(updatedQuantity, price, quantity);
+
+	}
+
+}
+
+function updateDB(updatedQuantity, price, quantity) {
+	var total = quantity * price;
+
+	connection.query
+}
+
+
+
 
 
