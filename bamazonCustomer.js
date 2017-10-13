@@ -76,8 +76,10 @@ function quantityVerify(item, quantity){
 		userPrompt();
 	}else {
 		var updatedQuantity = stockQuantityArr[item] - quantity;
+		stockQuantityArr[item]-= quantity;
 		var price = priceArr[item];
-		updateDB(updatedQuantity, price, quantity);
+		updateDB(updatedQuantity, price, quantity, item);
+
 
 	}
 
@@ -86,7 +88,8 @@ function quantityVerify(item, quantity){
 function updateDB(updatedQuantity, price, quantity, item) {
 	var total = quantity * price;
 
-	connection.query("UPDATE products SET stock_quantity ='" + updatedQuantity +  "'WHERE item_id ='" + item + "'", function(err, res) {
+	var update = `UPDATE products SET stock_quantity = ${updatedQuantity} WHERE item_id =  ${item}`
+	connection.query(update, function(err, res) {
 		if (err) throw err;
 		console.log("Purchase complete. Your total is: $" + total);
 		queryAllitems();
