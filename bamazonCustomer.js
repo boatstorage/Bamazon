@@ -54,37 +54,44 @@ function userPrompt() {
 			message: "how many would you like to buy?"
 		}
 		])
-		.then(function(answer){
+		.then(function(answer, error){
+			if (error) {
+
+		 	throw error;
+			userPrompt();
+
+		}else {
 			var item = answer.itemID;
 			var quantity = answer.units;
 			quantityVerify(item, quantity);
-		}
+			}
 
-		function(error) {
-			if error throw error;
-			userPrompt();
-		}
+		
 	})
 }
 
-function quantityVerify(item, quantity){
-	if (stockQuantityArr[item] < quantity ) {
-		console.log("Insufficient quantity")
-		userPrompt();
-	}else {
-		var updatedQuantity = stockQuantityArr[item] - quantity;
-		var price = priceArr[item];
-		updateDB(updatedQuantity, price, quantity);
+// function quantityVerify(item, quantity){
+// 	if (stockQuantityArr[item] < quantity ) {
+// 		console.log("Insufficient quantity")
+// 		userPrompt();
+// 	}else {
+// 		var updatedQuantity = stockQuantityArr[item] - quantity;
+// 		var price = priceArr[item];
+// 		updateDB(updatedQuantity, price, quantity);
 
-	}
+// 	}
 
-}
+// }
 
-function updateDB(updatedQuantity, price, quantity) {
-	var total = quantity * price;
+// function updateDB(updatedQuantity, price, quantity, item) {
+// 	var total = quantity * price;
 
-	connection.query
-}
+// 	connection.query("UPDATE products SET stock_quantity ='" + updatedQuantity +  "'WHERE item_id ='" + item + "'", function(err, res) {
+// 		if (err) throw err;
+// 		console.log("Purchase complete. Your total is: $" + total);
+// 	connection.end();
+// 	})
+// }
 
 
 
