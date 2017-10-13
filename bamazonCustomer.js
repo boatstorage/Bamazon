@@ -17,7 +17,6 @@ var connection = mysql.createConnection({
 connection.connect(function(err){
 	if (err) throw err;
 	console.log("connected as id " + connection.threadId);
-  	console.log(afterConnection);
   	queryAllitems();
     });
 
@@ -29,11 +28,12 @@ function queryAllitems() {
   for (var i = 0; i < res.length; i++){
 
   console.log("item id: " + res[i].item_id + " | name: " + res[i].product_name + " | deptartment: " + res[i].deptartment_name + " | price: $" + res[i].price);
-	};
+	
+	console.log(res[i].stock_quantity);
 	stockQuantityArr.push(res[i].stock_quantity);
 	priceArr.push(res[i].price);
-
-  connection.end();
+};
+  // connection.end();
   userPrompt();
 
 });
@@ -70,28 +70,29 @@ function userPrompt() {
 	})
 }
 
-// function quantityVerify(item, quantity){
-// 	if (stockQuantityArr[item] < quantity ) {
-// 		console.log("Insufficient quantity")
-// 		userPrompt();
-// 	}else {
-// 		var updatedQuantity = stockQuantityArr[item] - quantity;
-// 		var price = priceArr[item];
-// 		updateDB(updatedQuantity, price, quantity);
+function quantityVerify(item, quantity){
+	if (stockQuantityArr[item] < quantity ) {
+		console.log("Insufficient quantity")
+		userPrompt();
+	}else {
+		var updatedQuantity = stockQuantityArr[item] - quantity;
+		var price = priceArr[item];
+		updateDB(updatedQuantity, price, quantity);
 
-// 	}
+	}
 
-// }
+}
 
-// function updateDB(updatedQuantity, price, quantity, item) {
-// 	var total = quantity * price;
+function updateDB(updatedQuantity, price, quantity, item) {
+	var total = quantity * price;
 
-// 	connection.query("UPDATE products SET stock_quantity ='" + updatedQuantity +  "'WHERE item_id ='" + item + "'", function(err, res) {
-// 		if (err) throw err;
-// 		console.log("Purchase complete. Your total is: $" + total);
-// 	connection.end();
-// 	})
-// }
+	connection.query("UPDATE products SET stock_quantity ='" + updatedQuantity +  "'WHERE item_id ='" + item + "'", function(err, res) {
+		if (err) throw err;
+		console.log("Purchase complete. Your total is: $" + total);
+		queryAllitems();
+	// connection.end();
+	})
+}
 
 
 
